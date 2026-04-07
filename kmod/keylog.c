@@ -134,6 +134,7 @@ static int __init keylog_init(void)
     device_create(cls, NULL, devno, NULL, "keylog");
 
     /* Part 1 TODO: log that the module loaded */
+    pr_info("keylog: loaded\n");
 
     /* Part 2 TODO: register keyboard notifier */
 
@@ -143,6 +144,7 @@ static int __init keylog_init(void)
 static void __exit keylog_exit(void)
 {
     /* Part 1 TODO: log that the module unloaded */
+    pr_info("keylog: unloaded\n");
 
     /* Part 2 TODO: unregister keyboard notifier */
 
